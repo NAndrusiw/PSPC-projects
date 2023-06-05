@@ -1,0 +1,221 @@
+Dim editionNumber As Integer ' Global variable to store the edition number
+
+Sub HighlightRowsAndWriteMessage()
+    ' Increment the edition number
+    editionNumber = editionNumber + 1
+    
+    ' Prompt the user to select the column to reference
+    Dim selectedColumn As String
+    selectedColumn = InputBox("Enter the column letter to reference (e.g., D):")
+    
+    ' Create a copy of the main worksheet
+    ThisWorkbook.Sheets("Master").Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+    Dim wsCopy As Worksheet
+    Set wsCopy = ActiveSheet
+    wsCopy.Name = "Master (" & editionNumber & ")"
+    
+    ' Find the last row with data in the selected column
+    Dim lastRow As Long
+    lastRow = wsCopy.Cells(wsCopy.Rows.Count, selectedColumn).End(xlUp).Row
+    
+    ' Find the first row of data in the selected column
+    Dim firstRow As Long
+    firstRow = 1
+    Do Until IsNumeric(wsCopy.Cells(firstRow, selectedColumn).Value) And wsCopy.Cells(firstRow, selectedColumn).Value <> 0
+        firstRow = firstRow + 1
+    Loop
+    
+    ' Set the range based on the first and last row
+    Dim rng As Range
+    Set rng = wsCopy.Range(selectedColumn & firstRow & ":" & selectedColumn & lastRow)
+    
+    ' Declare variables
+    Dim cell As Range
+    Dim total As Double
+    Dim rowsToHighlight As New Collection
+    Dim rowNumber As Variant
+    Dim rowNumbers As Collection
+    Dim topRows As Collection
+    Dim topPercent As Double
+    Dim i As Integer
+    Dim highestValue As Double
+    Dim highestValueRow As Variant
+    Dim highestValueRowIndex As Integer
+    Dim initialTargetPercentage As Double
+    Dim finalTargetPercentage As Double
+    Dim maxCells As Integer
+    
+    ' Initialize total
+    total = 0
+    
+    ' Calculate the full total sum of the numeric values within rng
+Dim cellValue As Variant
+Dim numericTotal As Double
+
+numericTotal = 0
+
+For Each cell In rng
+    cellValue = cell.Value
+    If IsNumeric(cellValue) And cellValue <> 0 Then
+        numericTotal = numericTotal + cellValue
+    End If
+Next cell
+
+' Assign the numeric total to fullTotal
+fullTotal = numericTotal
+    
+    ' Set the initial and final target percentages
+    initialTargetPercentage = 0.75 ' Change this value to adjust the initial target percentage
+    finalTargetPercentage = 0.8 ' Change this value to adjust the final target percentage
+    
+    ' Create a collection of row numbers
+    Set rowNumbers = New Collection
+    For Each cell In rng
+        If IsNumeric(cell.Value) And cell.Value > 0 Then
+            rowNumbers.Add cell.Row
+        End If
+    Next cell
+    
+    ' Calculate the length of rowNumbers
+    Dim rowNumbersLength As Integer
+    rowNumbersLength = rowNumbers.Count
+    
+    ' Calculate maxCells based on rowNumbersLength (floored to the nearest whole number)
+    maxCells = WorksheetFunction.Floor(rowNumbersLength * 0.2, 1)
+    
+    ' Set the percentage of top rows to consider
+    topPercent = 0.1 ' Change this value to adjust the percentage of top rows
+    
+    ' Create a collection of top row numbers
+    Set topRows = New Collection
+    For i = 1 To Round(rowNumbers.Count * topPercent)
+        ' Find the row with the highest value
+        highestValue = 0
+        highestValueRowIndex = 0
+        For j = 1 To rowNumbers.Count
+            rowNumber = rowNumbers(j)
+            If rng.Parent.Cells(rowNumber, selectedColumn).Value > highestValue Then
+                highestValue = rng.Parent.Cells(rowNumber, selectedColumn).Value
+                highestValueRow = rowNumber
+                highestValueRowIndex = j
+            End If
+        Next j
+        
+        ' Add the row with the highest value to the top rows
+        topRows.Add highestValueRow
+        
+        ' Remove the row with the highest value from the row numbers
+        rowNumbers.Remove highestValueRowIndex
+    Next i
+    
+    ' Randomly select rows from the top rows until the total is at least the initial target total
+    Randomize ' Initialize the random number generator
+    Do While total < fullTotal * initialTargetPercentage And topRows.Count > 0
+        ' Select a random row number from the top rows
+        rowNumber = topRows(Int((topRows.Count * Rnd) + 1))
+        
+        ' Add the value to the total
+        total = total + rng.Parent.Cells(rowNumber, selectedColumn).Value
+        
+        ' Add the row to the rows to highlight
+        rowsToHighlight.Add rowNumber
+        
+        ' Remove the row number from the top rows
+        For j = 1 To topRows.Count
+            If topRows(j) = rowNumber Then
+                topRows.Remove j
+                Exit For
+            End If
+        Next j
+    Loop
+    
+    ' Continue selecting rows from the rest of the data until the total is at least the final target total or the maximum number of cells are selected
+    Do While total < fullTotal * finalTargetPercentage And rowsToHighlight.Count < maxCells And rowNumbers.Count > 0
+        ' Select a random row number from the row numbers
+        rowNumber = rowNumbers(Int((rowNumbers.Count * Rnd) + 1))
+        
+        ' Add the value to the total
+        total = total + rng.Parent.Cells(rowNumber, selectedColumn).Value
+        
+        ' Add the row to the rows to highlight
+        rowsToHighlight.Add rowNumber
+        
+        ' Remove the row number from the row numbers
+        For j = 1 To rowNumbers.Count
+            If rowNumbers(j) = rowNumber Then
+                rowNumbers.Remove j
+                Exit For
+            End If
+        Next j
+    Loop
+    
+    ' Highlight the selected rows
+    For Each rowNumber In rowsToHighlight
+        rng.Parent.Rows(rowNumber).Interior.Color = RGB(255, 255, 0) ' Yellow
+    Next rowNumber
+    
+    ' Prepare the message
+    Dim message As String
+    message = "Number of highlighted cells: " & rowsToHighlight.Count & vbCrLf & _
+               "Total sum of highlighted cells: $" & Format(total, "#,##0.00")
+    
+    ' Calculate the difference from the target maximum
+    Dim difference As Double
+    difference = total - (fullTotal * finalTargetPercentage)
+    
+    ' Determine if the total is above or below the target maximum
+    Dim status As String
+    Dim differenceAmount As String
+    
+    If difference > 0 Then
+        status = "Above"
+        differenceAmount = Format(difference, "#,##0.00")
+    ElseIf difference < 0 Then
+        status = "Below"
+        differenceAmount = Format(-difference, "#,##0.00")
+    End If
+    
+    ' Display the message
+    MsgBox message, vbInformation, "Highlight Summary"
+    
+    ' Get the summary sheet index
+    Dim summarySheetIndex As Integer
+    summarySheetIndex = ThisWorkbook.Sheets.Count
+    
+    ' Add a new worksheet for the summary
+    Dim wsSummary As Worksheet
+    Set wsSummary = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(summarySheetIndex))
+    wsSummary.Name = "Summary " & editionNumber
+    
+    ' Write summary values
+    wsSummary.Range("A1").Value = "Highlight Summary"
+    wsSummary.Range("A3").Value = "Highlighted Cells Count:"
+    wsSummary.Range("B3").Value = rowsToHighlight.Count
+    wsSummary.Range("A4").Value = "Target Highlighted Cells Count:"
+    wsSummary.Range("B4").Value = maxCells
+    wsSummary.Range("A5").Value = "Total sum of highlighted cells:"
+    wsSummary.Range("B5").Value = "$" & Format(total, "#,##0.00")
+    wsSummary.Range("A6").Value = "Target Maximum:"
+    wsSummary.Range("B6").Value = "$" & Format(fullTotal * finalTargetPercentage, "#,##0.00")
+    wsSummary.Range("A7").Value = "Status:"
+    wsSummary.Range("B7").Value = status
+    wsSummary.Range("A8").Value = "Difference Amount:"
+    wsSummary.Range("B8").Value = "$" & differenceAmount
+    
+    ' Format summary sheet
+    With wsSummary
+        .Range("A1:B1").Merge
+        .Range("A1").Font.Size = 14
+        .Range("A1").Font.Bold = True
+        .Range("A1").HorizontalAlignment = xlCenter
+        .Range("A3:B9").HorizontalAlignment = xlLeft
+        .Columns("A:B").AutoFit
+        .Range("A3:A9").Font.Bold = True
+    End With
+    
+    ' Clean up
+    Set wsSummary = Nothing
+    Set rng = Nothing
+    Set wsCopy = Nothing
+End Sub
+
