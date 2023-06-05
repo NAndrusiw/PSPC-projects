@@ -26,7 +26,7 @@ Microsoft Excel (version 2010 or later) is required to run the VBA script.
 3. Insert a new module and copy the script code into the module.
 4. Modify the script if needed, such as adjusting target percentages or maximum cells.
 5. Save the Excel file 
-6. Press alt + F8 to run the script by executing the `HighlightRowsAndWriteMessage` macro.
+6. Press Alt + F8 to run the script by executing the `HighlightRowsAndWriteMessage` macro.
 7. Follow the prompts to select the column to reference.
 8. The script will create a copy of the "Master" sheet, highlight rows, and generate a summary sheet with the results.
 9. Depending on the difference shown in summary, you may need to remove a low cost element and add one that is closest to the value of the difference between the target and actual values
