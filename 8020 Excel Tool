@@ -8,11 +8,17 @@ Sub HighlightRowsAndWriteMessage()
     Dim selectedColumn As String
     selectedColumn = InputBox("Enter the column letter to reference (e.g., D):")
     
+    ' Find the main worksheet by its index
+    Dim mainSheetIndex As Integer
+    mainSheetIndex = 1 ' Assuming the main sheet is the first sheet in the workbook
+    
     ' Create a copy of the main worksheet
-    ThisWorkbook.Sheets("Master").Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+    Dim wsMain As Worksheet
+    Set wsMain = ThisWorkbook.Sheets(mainSheetIndex)
+    wsMain.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
     Dim wsCopy As Worksheet
     Set wsCopy = ActiveSheet
-    wsCopy.Name = "Master (" & editionNumber & ")"
+    wsCopy.Name = "Sample (" & editionNumber & ")"
     
     ' Find the last row with data in the selected column
     Dim lastRow As Long
@@ -49,20 +55,20 @@ Sub HighlightRowsAndWriteMessage()
     total = 0
     
     ' Calculate the full total sum of the numeric values within rng
-Dim cellValue As Variant
-Dim numericTotal As Double
-
-numericTotal = 0
-
-For Each cell In rng
-    cellValue = cell.Value
-    If IsNumeric(cellValue) And cellValue <> 0 Then
-        numericTotal = numericTotal + cellValue
-    End If
-Next cell
-
-' Assign the numeric total to fullTotal
-fullTotal = numericTotal
+    Dim cellValue As Variant
+    Dim numericTotal As Double
+    
+    numericTotal = 0
+    
+    For Each cell In rng
+        cellValue = cell.Value
+        If IsNumeric(cellValue) And cellValue <> 0 Then
+            numericTotal = numericTotal + cellValue
+        End If
+    Next cell
+    
+    ' Assign the numeric total to fullTotal
+    fullTotal = numericTotal
     
     ' Set the initial and final target percentages
     initialTargetPercentage = 0.75 ' Change this value to adjust the initial target percentage
@@ -185,19 +191,19 @@ fullTotal = numericTotal
     ' Add a new worksheet for the summary
     Dim wsSummary As Worksheet
     Set wsSummary = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(summarySheetIndex))
-    wsSummary.Name = "Summary " & editionNumber
+    wsSummary.Name = "Sample Summary " & editionNumber
     
     ' Write summary values
     wsSummary.Range("A1").Value = "Highlight Summary"
     wsSummary.Range("A3").Value = "Highlighted Cells Count:"
     wsSummary.Range("B3").Value = rowsToHighlight.Count
-    wsSummary.Range("A4").Value = "Target Highlighted Cells Count:"
+    wsSummary.Range("A4").Value = "Target Highlighted Cells Count (20% of Total Count):"
     wsSummary.Range("B4").Value = maxCells
     wsSummary.Range("A5").Value = "Total sum of highlighted cells:"
     wsSummary.Range("B5").Value = "$" & Format(total, "#,##0.00")
-    wsSummary.Range("A6").Value = "Target Maximum:"
+    wsSummary.Range("A6").Value = "Target Maximum(80% of Total):"
     wsSummary.Range("B6").Value = "$" & Format(fullTotal * finalTargetPercentage, "#,##0.00")
-    wsSummary.Range("A7").Value = "Status:"
+    wsSummary.Range("A7").Value = "Status (Above or Below Target Value):"
     wsSummary.Range("B7").Value = status
     wsSummary.Range("A8").Value = "Difference Amount:"
     wsSummary.Range("B8").Value = "$" & differenceAmount
@@ -217,5 +223,7 @@ fullTotal = numericTotal
     Set wsSummary = Nothing
     Set rng = Nothing
     Set wsCopy = Nothing
+    Set wsMain = Nothing
 End Sub
+
 
