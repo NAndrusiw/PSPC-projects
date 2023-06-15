@@ -20,17 +20,15 @@ This script is designed with performance in mind, many coworkers do not have hig
 Microsoft Excel (version 2010 or later) is required to run the VBA script.
 
 ### Usage
-
-1. Open the Excel file containing the dataset.
-2. Press Alt + F11 to open the VBA editor.
-3. Insert a new module and copy the script code into the module.
-4. Modify the script if needed, such as adjusting target percentages or maximum cells.
-5. Save the Excel file 
-6. Press Alt + F8 to run the script by executing the `HighlightRowsAndWriteMessage` macro.
-7. Follow the prompts to select the column to reference.
-8. The script will create a copy of the "Master" sheet, highlight rows, and generate a summary sheet with the results.
-9. Depending on the difference shown in summary, you may need to remove a low cost element and add one that is closest to the value of the difference between the target and actual values
-10. this script can be executed many times on the same sheet by repeating steps 5-8, it is important to ensure this is ONLY run on the original. Copies with your selection will be created as a separate page in the same file. You may pick the iteration which best suites your needs, it is important to remember this tool used randomization to achieve its results so it may not produce a desireable result EVERY time, but it is tuned so that you should find a very high rate of success regardless. it may just take a second or third execution
+1. Open the 80/20 tool and copy all of the code.
+2. Open the Excel file containing the dataset.
+3. Press Alt + F11 to open the VBA editor.
+4. Insert a new module and paste the script code into the module.
+5. Press Alt + F8 to run the script by executing the `HighlightRowsAndWriteMessage` macro.
+6. Follow the prompts to input the reference column containing the prices.
+8. The script will create a copy of the Master sheet, highlight rows, and generate a summary sheet with the results.
+9. Depending on the difference shown in summary, you may need to remove a low cost element and add one that is closest to the value of the difference between the target and actual values.
+10. this script can be executed many times on the same sheet by repeating steps 5-8, it is important to ensure this is ONLY run on the original. Copies with your selection will be created as a separate page in the same file. You may pick the iteration which best suites your needs, it is important to remember this tool used randomization to achieve its results so it may not produce a desireable result EVERY time, but it is tuned so that you should find a very high rate of success within a couple iterations at most.
 
 ### License
 
