@@ -22,9 +22,9 @@ Microsoft Excel (version 2010 or later) is required to run the VBA script.
 ### Usage
 1. Open the 80/20 tool and copy all of the code.
 2. Open the Excel file containing the dataset.
-3. Press Alt + F11 to open the VBA editor.
+3. Press Alt + F11 (Alt + Fn + F8 if not using keyboard with dedicated function row) to open the VBA editor.
 4. Insert a new module and paste the script code into the module.
-5. Press Alt + F8 to run the script by executing the `HighlightRowsAndWriteMessage` macro.
+5. Press Alt + F8 (Alt + Fn + F8 if not using keyboard with dedicated function row) to run the script by executing the `HighlightRowsAndWriteMessage` macro.
 6. Follow the prompts to input the reference column containing the prices.
 8. The script will create a copy of the Master sheet, highlight rows, and generate a summary sheet with the results.
 9. Depending on the difference shown in summary, you may need to remove a low cost element and add one that is closest to the value of the difference between the target and actual values.
