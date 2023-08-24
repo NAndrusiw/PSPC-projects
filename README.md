@@ -7,6 +7,8 @@ This script is designed with performance in mind, many coworkers do not have hig
 ## Updates
   July 19, 2023: Fixed bug with sheet naming reference
         Updated usage instructions
+  August 24, 2023: Improved error handling, now requires minimal formatting for same results
+        Will now automatically filter out invalid data types provided in the file
 
 ## Features
 
